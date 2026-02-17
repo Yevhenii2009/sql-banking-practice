@@ -1,0 +1,112 @@
+-- Chapter 4: JOINS (MySQL)
+
+SELECT *
+FROM customer c
+INNER JOIN address a
+ON c.address_id = a.address_id;
+
+SELECT c.first_name, c.last_name, a.address
+FROM customer c
+JOIN address a
+ON c.address_id = a.address_id;
+
+SELECT c.first_name, c.last_name, ci.city
+FROM customer c
+JOIN address a ON c.address_id = a.address_id
+JOIN city ci ON a.city_id = ci.city_id;
+
+SELECT c.first_name, c.last_name, co.country
+FROM customer c
+JOIN address a ON c.address_id = a.address_id
+JOIN city ci ON a.city_id = ci.city_id
+JOIN country co ON ci.country_id = co.country_id;
+
+SELECT c.first_name, p.amount
+FROM customer c
+JOIN payment p ON c.customer_id = p.customer_id;
+
+SELECT c.first_name, SUM(p.amount)
+FROM customer c
+JOIN payment p ON c.customer_id = p.customer_id
+GROUP BY c.customer_id;
+
+SELECT c.first_name, COUNT(r.rental_id)
+FROM customer c
+JOIN rental r ON c.customer_id = r.customer_id
+GROUP BY c.customer_id;
+
+SELECT f.title, c.name
+FROM film f
+JOIN film_category fc ON f.film_id = fc.film_id
+JOIN category c ON fc.category_id = c.category_id;
+
+SELECT f.title, l.name
+FROM film f
+JOIN language l ON f.language_id = l.language_id;
+
+SELECT c.first_name, r.rental_date
+FROM customer c
+LEFT JOIN rental r ON c.customer_id = r.customer_id;
+
+SELECT c.first_name, r.rental_date
+FROM customer c
+LEFT JOIN rental r ON c.customer_id = r.customer_id
+WHERE r.rental_id IS NULL;
+
+SELECT f.title, i.inventory_id
+FROM film f
+LEFT JOIN inventory i ON f.film_id = i.film_id;
+
+SELECT f.title, i.inventory_id
+FROM film f
+RIGHT JOIN inventory i ON f.film_id = i.film_id;
+
+SELECT c.first_name, p.amount
+FROM customer c
+JOIN payment p ON c.customer_id = p.customer_id
+WHERE p.amount > 5;
+
+SELECT c.first_name, p.amount
+FROM customer c
+JOIN payment p ON c.customer_id = p.customer_id
+ORDER BY p.amount DESC;
+
+SELECT f.title, COUNT(r.rental_id) AS rental_count
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id
+GROUP BY f.film_id
+ORDER BY rental_count DESC;
+
+SELECT c.first_name, c2.first_name
+FROM customer c
+JOIN customer c2
+ON c.store_id = c2.store_id
+AND c.customer_id <> c2.customer_id;
+
+SELECT s.store_id, c.first_name
+FROM store s
+JOIN customer c ON s.store_id = c.store_id;
+
+SELECT st.first_name, st.last_name, a.address
+FROM staff st
+JOIN address a ON st.address_id = a.address_id;
+
+SELECT st.first_name, SUM(p.amount)
+FROM staff st
+JOIN payment p ON st.staff_id = p.staff_id
+GROUP BY st.staff_id;
+
+SELECT c.first_name, SUM(p.amount) AS total_spent
+FROM customer c
+JOIN payment p ON c.customer_id = p.customer_id
+GROUP BY c.customer_id
+HAVING total_spent > 100;
+
+SELECT f.title, co.country
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+JOIN store s ON i.store_id = s.store_id
+JOIN address a ON s.address_id = a.address_id
+JOIN city ci ON a.city_id = ci.city_id
+JOIN country co ON ci.country_id = co.country_id;
