@@ -1,24 +1,16 @@
 Set Operations & Advanced Queries (firm database)
 
--- UNION
-
 SELECT city FROM branch
 UNION
 SELECT city FROM customer;
-
--- UNION ALL
 
 SELECT city FROM branch
 UNION ALL
 SELECT city FROM customer;
 
--- Customers that are individuals
-
 SELECT cust_id FROM individual
 UNION
 SELECT cust_id FROM business;
-
--- Emulate INTERSECT (customers who have accounts AND transactions)
 
 SELECT DISTINCT a.cust_id
 FROM account a
@@ -26,16 +18,11 @@ WHERE a.account_id IN (
     SELECT t.account_id FROM transaction t
 );
 
--- Emulate EXCEPT (customers without accounts)
-
 SELECT cust_id
 FROM customer
 WHERE cust_id NOT IN (
     SELECT cust_id FROM account
 );
-
--- CASE advanced
-
 SELECT account_id,
        avail_balance,
        CASE
@@ -44,8 +31,6 @@ SELECT account_id,
            ELSE 'HIGH'
        END AS balance_category
 FROM account;
-
--- Derived table + ranking style logic
 
 SELECT *
 FROM (
@@ -57,8 +42,6 @@ FROM (
 ) AS totals
 ORDER BY total_balance DESC;
 
--- Top 3 richest customers
-
 SELECT *
 FROM (
     SELECT 
@@ -69,8 +52,6 @@ FROM (
 ) AS totals
 ORDER BY total_balance DESC
 LIMIT 3;
-
--- Employees who opened more accounts than average
 
 SELECT *
 FROM (
@@ -86,8 +67,6 @@ WHERE accounts_opened > (
         GROUP BY open_emp_id
     ) AS avg_calc
 );
-
--- Branches with total balance above company average
 
 SELECT *
 FROM (
