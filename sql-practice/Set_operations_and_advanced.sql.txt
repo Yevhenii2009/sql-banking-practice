@@ -1,0 +1,105 @@
+Set Operations & Advanced Queries (firm database)
+
+-- UNION
+
+SELECT city FROM branch
+UNION
+SELECT city FROM customer;
+
+-- UNION ALL
+
+SELECT city FROM branch
+UNION ALL
+SELECT city FROM customer;
+
+-- Customers that are individuals
+
+SELECT cust_id FROM individual
+UNION
+SELECT cust_id FROM business;
+
+-- Emulate INTERSECT (customers who have accounts AND transactions)
+
+SELECT DISTINCT a.cust_id
+FROM account a
+WHERE a.account_id IN (
+    SELECT t.account_id FROM transaction t
+);
+
+-- Emulate EXCEPT (customers without accounts)
+
+SELECT cust_id
+FROM customer
+WHERE cust_id NOT IN (
+    SELECT cust_id FROM account
+);
+
+-- CASE advanced
+
+SELECT account_id,
+       avail_balance,
+       CASE
+           WHEN avail_balance < 1000 THEN 'LOW'
+           WHEN avail_balance BETWEEN 1000 AND 5000 THEN 'MEDIUM'
+           ELSE 'HIGH'
+       END AS balance_category
+FROM account;
+
+-- Derived table + ranking style logic
+
+SELECT *
+FROM (
+    SELECT 
+        cust_id,
+        SUM(avail_balance) AS total_balance
+    FROM account
+    GROUP BY cust_id
+) AS totals
+ORDER BY total_balance DESC;
+
+-- Top 3 richest customers
+
+SELECT *
+FROM (
+    SELECT 
+        cust_id,
+        SUM(avail_balance) AS total_balance
+    FROM account
+    GROUP BY cust_id
+) AS totals
+ORDER BY total_balance DESC
+LIMIT 3;
+
+-- Employees who opened more accounts than average
+
+SELECT *
+FROM (
+    SELECT open_emp_id, COUNT(*) AS accounts_opened
+    FROM account
+    GROUP BY open_emp_id
+) AS emp_stats
+WHERE accounts_opened > (
+    SELECT AVG(cnt)
+    FROM (
+        SELECT COUNT(*) AS cnt
+        FROM account
+        GROUP BY open_emp_id
+    ) AS avg_calc
+);
+
+-- Branches with total balance above company average
+
+SELECT *
+FROM (
+    SELECT open_branch_id, SUM(avail_balance) AS branch_total
+    FROM account
+    GROUP BY open_branch_id
+) AS branch_totals
+WHERE branch_total > (
+    SELECT AVG(total)
+    FROM (
+        SELECT SUM(avail_balance) AS total
+        FROM account
+        GROUP BY open_branch_id
+    ) AS avg_totals
+);
